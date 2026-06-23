@@ -1,11 +1,34 @@
+# Python
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
 *.egg-info/
+dist/
+build/
+
+# Jupyter
 .ipynb_checkpoints/
+
+# 系统
 .DS_Store
-output/
-models/
-*.safetensors
-*.bin
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 临时文件
+*.tmp
+*.bak
 *.log
 .env
+
+# 训练中间产物（只保留 final）
+output/Qwen3_Arknights_LoRA/
+output/*/checkpoint-*/
+
+# 基础模型（用户自己下载）
+models/
