@@ -27,17 +27,20 @@ jupyter notebook 01-Qwen3-Arknights-LoRA.ipynb
 # 点击 Run All 运行所有 cell
 
 # 5. 一键部署
-./deploy.sh
+./arknights-deploy
 ```
 
-部署完成后，你可以：
+部署完成后，你可以直接使用（不用加 `./`）：
 
 ```bash
 # 命令行对话
-./chat.sh "银灰是什么职业？"
+arknights-chat "银灰是什么职业？"
 
-# 或启动 OpenCode
+# 启动 OpenCode
 opencode
+
+# 停止服务
+arknights-stop
 ```
 
 ## 📁 项目结构
@@ -45,9 +48,9 @@ opencode
 ```
 arknights-qwen-assistant/
 ├── 01-Qwen3-Arknights-LoRA.ipynb   # 微调训练 Notebook
-├── deploy.sh                        # 一键部署脚本
-├── chat.sh                          # 命令行对话脚本
-├── stop.sh                          # 停止服务脚本
+├── arknights-deploy                 # 一键部署脚本
+├── arknights-chat                   # 命令行对话（部署后自动生成）
+├── arknights-stop                   # 停止服务（部署后自动生成）
 ├── app.py                           # Gradio 网页部署（可选）
 ├── generate_predictions.py          # 评估预测脚本
 ├── requirements.txt                 # 依赖清单
@@ -75,7 +78,7 @@ arknights-qwen-assistant/
 ### 方式 1：一键部署（推荐）
 
 ```bash
-./deploy.sh
+./arknights-deploy
 ```
 
 脚本会自动：
@@ -84,7 +87,7 @@ arknights-qwen-assistant/
 3. 启动 vLLM 服务
 4. 测试模型
 5. 配置 OpenCode
-6. 创建便捷脚本
+6. 创建便捷命令（arknights-chat / arknights-stop）
 
 ### 方式 2：手动部署
 
@@ -141,10 +144,10 @@ python app.py \
 ### 命令行对话
 
 ```bash
-./chat.sh "银灰是什么职业？"
-./chat.sh "介绍一下阿米娅"
-./chat.sh "扮演银灰，说一句任命助理的台词"
-./chat.sh "推荐几个强力的近卫干员"
+arknights-chat "银灰是什么职业？"
+arknights-chat "介绍一下阿米娅"
+arknights-chat "扮演银灰，说一句任命助理的台词"
+arknights-chat "推荐几个强力的近卫干员"
 ```
 
 ### OpenCode 中使用
@@ -164,14 +167,14 @@ python app.py \
 ```bash
 export MODEL_PATH=/path/to/your/model
 export LORA_PATH=/path/to/your/lora
-./deploy.sh
+./arknights-deploy
 ```
 
 ### 修改端口
 
 ```bash
 export PORT=9000
-./deploy.sh
+./arknights-deploy
 ```
 
 ## 🛠️ 故障排查

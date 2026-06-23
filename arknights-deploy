@@ -208,20 +208,20 @@ EOF
 print_success "OpenCode 配置完成"
 
 # ============================================
-# 步骤 6: 创建便捷脚本
+# 步骤 6: 创建便捷脚本（加到 PATH，不用 ./）
 # ============================================
 print_info "创建便捷脚本..."
 
 # 创建对话脚本
-cat > chat.sh <<'EOF'
+cat > arknights-chat <<'EOF'
 #!/bin/bash
 # 明日方舟干员助手 - 命令行对话
 MODEL_NAME="arknights-assistant"
 PORT=8000
 
 if [ -z "$1" ]; then
-    echo "用法: ./chat.sh \"你的问题\""
-    echo "示例: ./chat.sh \"银灰是什么职业？\""
+    echo "用法: arknights-chat \"你的问题\""
+    echo "示例: arknights-chat \"银灰是什么职业？\""
     exit 1
 fi
 
@@ -241,17 +241,36 @@ except:
     print('请求失败，请检查 vLLM 服务是否启动')
 "
 EOF
-chmod +x chat.sh
+chmod +x arknights-chat
 
 # 创建停止脚本
-cat > stop.sh <<'EOF'
+cat > arknights-stop <<'EOF'
 #!/bin/bash
 # 停止 vLLM 服务
 echo "停止 vLLM 服务..."
 pkill -f "vllm serve" 2>/dev/null
 echo "已停止"
 EOF
-chmod +x stop.sh
+chmod +x arknights-stop
+
+# 把脚本加到 PATH（创建软链接到 /usr/local/bin）
+print_info "将脚本加到系统 PATH..."
+for cmd in arknights-chat arknights-stop; do
+    if [ -w /usr/local/bin ]; then
+        ln -sf "$(pwd)/$cmd" /usr/local/bin/$cmd
+    else
+        sudo ln -sf "$(pwd)/$cmd" /usr/local/bin/$cmd 2>/dev/null || {
+            # 如果没有 sudo 权限，加到 ~/.local/bin
+            mkdir -p ~/.local/bin
+            ln -sf "$(pwd)/$cmd" ~/.local/bin/$cmd
+            # 确保 ~/.local/bin 在 PATH 里
+            case ":$PATH:" in
+                *":$HOME/.local/bin:"*) ;;
+                *) echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc ;;
+            esac
+        }
+    fi
+done
 
 print_success "便捷脚本创建完成"
 
@@ -266,7 +285,7 @@ echo ""
 echo -e "${GREEN}使用方式：${NC}"
 echo ""
 echo "1. 命令行对话："
-echo -e "   ${BLUE}./chat.sh \"银灰是什么职业？\"${NC}"
+echo -e "   ${BLUE}arknights-chat \"银灰是什么职业？\"${NC}"
 echo ""
 echo "2. 启动 OpenCode："
 echo -e "   ${BLUE}opencode${NC}"
@@ -276,7 +295,7 @@ echo "3. 测试 API："
 echo -e "   ${BLUE}curl http://localhost:$PORT/v1/models${NC}"
 echo ""
 echo "4. 停止服务："
-echo -e "   ${BLUE}./stop.sh${NC}"
+echo -e "   ${BLUE}arknights-stop${NC}"
 echo ""
 echo -e "${YELLOW}提示：${NC}"
 echo "   - vLLM 日志: $VLLM_LOG"
